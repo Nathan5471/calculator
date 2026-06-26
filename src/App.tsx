@@ -74,7 +74,7 @@ function App() {
     <div className="flex flex-col justify-center min-h-screen bg-gray-600">
       {!selectedDifficulty && (
         <div className="flex flex-col items-center justify-center w-screen h-screen bg-black/35 inset-0 absolute">
-          <div className="flex flex-col items-center justify-center w-1/3 h-auto p-4 bg-gray-600 rounded-lg">
+          <div className="flex flex-col items-center justify-center w-9/12 sm:w-7/12 md:w-5/12 lg:w-1/3 h-auto p-4 bg-gray-600 rounded-lg">
             <h2 className="text-2xl font-bold text-white">Select Difficulty</h2>
             <div className="flex flex-row justify-center mt-4 space-x-4">
               {["easy", "medium", "hard"].map((difficulty) => (
@@ -86,7 +86,9 @@ function App() {
                       : "bg-gray-700 hover:bg-gray-600"
                   }`}
                   onClick={() => {
-                    updateDifficulty(difficulty as "easy" | "medium" | "hard");
+                    setButtonSelectedDifficulty(
+                      difficulty as "easy" | "medium" | "hard",
+                    );
                   }}
                 >
                   {difficulty.charAt(0).toUpperCase() + difficulty.slice(1)}
@@ -98,7 +100,7 @@ function App() {
             </p>
             <button
               className="px-4 py-2 mt-4 text-white bg-blue-500 hover:bg-blue-400 rounded-lg"
-              onClick={() => setSelectedDifficulty(buttonSelectedDifficulty)}
+              onClick={() => updateDifficulty(buttonSelectedDifficulty)}
             >
               Select
             </button>
@@ -120,7 +122,7 @@ function App() {
         </button>
       </div>
       <div className="flex items-center justify-center w-screen h-[calc(100vh-60px)] bg-gray-600">
-        <div className="flex flex-col justify-center w-1/4 h-auto p-4 bg-gray-500 rounded-lg">
+        <div className="flex flex-col justify-center w-2/3 sm:w-1/2 md:w-1/3 lg:w-1/4 h-auto p-4 bg-gray-500 rounded-lg">
           <div className="flex items-center w-full h-16 p-2 mb-4 bg-gray-400">
             <p className="text-4xl font-bold text-white">{calculatorText}</p>
           </div>
