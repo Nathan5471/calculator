@@ -12,12 +12,37 @@ function App() {
     medium: "Everytime you select a key, all keys will be shuffled",
     hard: "Same as medium, but you can only look at the shuffled keys for 2 before they're hidden",
   };
+  const [calculatorText, setCalculatorText] = useState("");
+  const [showKeys, setShowKeys] = useState(true);
+  const keys = [
+    "ac",
+    "^",
+    "%",
+    "/",
+    "7",
+    "8",
+    "9",
+    "*",
+    "4",
+    "5",
+    "6",
+    "-",
+    "1",
+    "2",
+    "3",
+    "+",
+    "0",
+    ".",
+    "<-",
+    "=",
+  ];
+  const [shuffledKeys, setShuffledKeys] = useState<string[]>(keys);
 
   return (
     <div className="flex flex-col justify-center min-h-screen bg-gray-600">
       {!selectedDifficulty && (
-        <div className="flex flex-col items-center justify-center w-screen h-screen bg-black/15">
-          <div className="flex flex-col items-center justify-center w-1/3 h-auto p-4 bg-gray-500 rounded-lg">
+        <div className="flex flex-col items-center justify-center w-screen h-screen bg-black/35 inset-0 absolute">
+          <div className="flex flex-col items-center justify-center w-1/3 h-auto p-4 bg-gray-600 rounded-lg">
             <h2 className="text-2xl font-bold text-white">Select Difficulty</h2>
             <div className="flex flex-row justify-center mt-4 space-x-4">
               {["easy", "medium", "hard"].map((difficulty) => (
@@ -50,6 +75,63 @@ function App() {
           </div>
         </div>
       )}
+      <div className="flex flex-row items-center justify-between w-full p-4 h-[calc(60px)] bg-gray-700">
+        <h1 className="text-2xl font-bold text-white">
+          {selectedDifficulty &&
+            selectedDifficulty?.charAt(0).toUpperCase() +
+              selectedDifficulty?.slice(1)}{" "}
+          Calculator
+        </h1>
+        <button
+          className="px-4 py-2 text-white bg-blue-500 hover:bg-blue-400 rounded-lg"
+          onClick={() => setSelectedDifficulty(null)}
+        >
+          Change Difficulty
+        </button>
+      </div>
+      <div className="flex items-center justify-center w-screen h-[calc(100vh-60px)] bg-gray-600">
+        <div className="flex flex-col justify-center w-1/4 h-auto p-4 bg-gray-500 rounded-lg">
+          <div className="flex items-center w-full h-16 p-2 mb-4 bg-gray-400">
+            <p className="text-4xl font-bold text-white">{calculatorText}</p>
+          </div>
+          <div className="grid grid-cols-4">
+            {shuffledKeys.map((key) => {
+              return (
+                <button
+                  key={key}
+                  className="w-16 h-16 text-2xl font-bold text-white bg-gray-500 hover:bg-gray-400 rounded-full"
+                  onClick={() => {
+                    if (key === "ac") {
+                      setCalculatorText("");
+                      return;
+                    }
+                    if (key === "<-") {
+                      setCalculatorText((prev) => prev.slice(0, -1));
+                      return;
+                    }
+                    if (key === "=") {
+                      // TODO: Solve
+                      return;
+                    }
+                    setCalculatorText((prev) => prev + key);
+                    if (
+                      selectedDifficulty === "medium" ||
+                      selectedDifficulty === "hard"
+                    ) {
+                      // Shuffle keys
+                    }
+                    if (selectedDifficulty === "hard") {
+                      // Hide keys after 2 seconds
+                    }
+                  }}
+                >
+                  {key}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
