@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 function App() {
   const [selectedDifficulty, setSelectedDifficulty] = useState<
@@ -38,6 +38,23 @@ function App() {
   ];
   const [shuffledKeys, setShuffledKeys] = useState<string[]>(keys);
 
+  useEffect(() => {
+    if (showKeys && selectedDifficulty === "hard") {
+      const timer = setTimeout(() => {
+        setShowKeys(false);
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [showKeys, selectedDifficulty]);
+
+  const updateDifficulty = (difficulty: "easy" | "medium" | "hard") => {
+    setShuffledKeys(keys);
+    setShowKeys(true);
+    setCalculatorText("");
+    setSelectedDifficulty(difficulty);
+    setButtonSelectedDifficulty("easy"); // Incase someone goes to change difficulty again
+  };
+
   const solveExpression = (expression: string): number => {
     try {
       const output = eval(expression.replace("^", "**"));
@@ -64,9 +81,7 @@ function App() {
                       : "bg-gray-700 hover:bg-gray-600"
                   }`}
                   onClick={() => {
-                    setButtonSelectedDifficulty(
-                      difficulty as "easy" | "medium" | "hard",
-                    );
+                    updateDifficulty(difficulty as "easy" | "medium" | "hard");
                   }}
                 >
                   {difficulty.charAt(0).toUpperCase() + difficulty.slice(1)}
@@ -109,41 +124,41 @@ function App() {
               return (
                 <button
                   key={key}
-                  className="w-16 h-16 text-2xl font-bold text-white bg-gray-400 hover:bg-gray-300 rounded-full"
+                  className={`w-16 h-16 text-2xl font-bold text-white ${!isNaN(parseFloat(key)) ? "bg-gray-400 hover:bg-gray-300" : "bg-orange-400 hover:bg-orange-300"} rounded-full`}
                   onClick={() => {
                     if (calculatorText === "Error") {
                       setCalculatorText("");
                     }
                     if (key === "ac") {
                       setCalculatorText("");
-                      return;
-                    }
-                    if (key === "<-") {
+                    } else if (key === "<-") {
                       setCalculatorText((prev) => prev.slice(0, -1));
-                      return;
-                    }
-                    if (key === "=") {
+                    } else if (key === "=") {
                       try {
                         const result = solveExpression(calculatorText);
                         setCalculatorText(result.toString());
                       } catch (error) {
                         setCalculatorText("Error");
                       }
-                      return;
+                    } else {
+                      setCalculatorText((prev) => prev + key);
                     }
-                    setCalculatorText((prev) => prev + key);
                     if (
                       selectedDifficulty === "medium" ||
                       selectedDifficulty === "hard"
                     ) {
-                      // Shuffle keys
+                      const shuffled = [...shuffledKeys].sort(
+                        () => Math.random() - 0.5,
+                      );
+                      setShuffledKeys(shuffled);
                     }
                     if (selectedDifficulty === "hard") {
-                      // Hide keys after 2 seconds
+                      // Shows the keys to kick off the useEffect that will hide them
+                      setShowKeys(true);
                     }
                   }}
                 >
-                  {key}
+                  {showKeys ? key : "?"}
                 </button>
               );
             })}
