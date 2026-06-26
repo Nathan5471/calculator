@@ -38,6 +38,16 @@ function App() {
   ];
   const [shuffledKeys, setShuffledKeys] = useState<string[]>(keys);
 
+  const solveExpression = (expression: string): number => {
+    try {
+      const output = eval(expression.replace("^", "**"));
+      return output;
+    } catch (error) {
+      console.error("Error evaluating expression:", error);
+      throw new Error("Invalid expression");
+    }
+  };
+
   return (
     <div className="flex flex-col justify-center min-h-screen bg-gray-600">
       {!selectedDifficulty && (
@@ -94,13 +104,16 @@ function App() {
           <div className="flex items-center w-full h-16 p-2 mb-4 bg-gray-400">
             <p className="text-4xl font-bold text-white">{calculatorText}</p>
           </div>
-          <div className="grid grid-cols-4">
+          <div className="grid grid-cols-4 gap-1">
             {shuffledKeys.map((key) => {
               return (
                 <button
                   key={key}
-                  className="w-16 h-16 text-2xl font-bold text-white bg-gray-500 hover:bg-gray-400 rounded-full"
+                  className="w-16 h-16 text-2xl font-bold text-white bg-gray-400 hover:bg-gray-300 rounded-full"
                   onClick={() => {
+                    if (calculatorText === "Error") {
+                      setCalculatorText("");
+                    }
                     if (key === "ac") {
                       setCalculatorText("");
                       return;
@@ -110,7 +123,12 @@ function App() {
                       return;
                     }
                     if (key === "=") {
-                      // TODO: Solve
+                      try {
+                        const result = solveExpression(calculatorText);
+                        setCalculatorText(result.toString());
+                      } catch (error) {
+                        setCalculatorText("Error");
+                      }
                       return;
                     }
                     setCalculatorText((prev) => prev + key);
