@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useRef } from "react";
 
 function App() {
   const [selectedDifficulty, setSelectedDifficulty] = useState<
@@ -14,6 +14,7 @@ function App() {
   };
   const [calculatorText, setCalculatorText] = useState("");
   const [showKeys, setShowKeys] = useState(true);
+  const timerRef = useRef<number | null>(null);
   const keys = [
     "ac",
     "^",
@@ -38,21 +39,25 @@ function App() {
   ];
   const [shuffledKeys, setShuffledKeys] = useState<string[]>(keys);
 
-  useEffect(() => {
-    if (showKeys && selectedDifficulty === "hard") {
-      const timer = setTimeout(() => {
-        setShowKeys(false);
-      }, 2000);
-      return () => clearTimeout(timer);
-    }
-  }, [showKeys, selectedDifficulty]);
-
   const updateDifficulty = (difficulty: "easy" | "medium" | "hard") => {
     setShuffledKeys(keys);
     setShowKeys(true);
     setCalculatorText("");
     setSelectedDifficulty(difficulty);
     setButtonSelectedDifficulty("easy"); // Incase someone goes to change difficulty again
+  };
+
+  const revealKeys = () => {
+    if (selectedDifficulty !== "hard") return;
+    setShowKeys(true);
+
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+    }
+
+    timerRef.current = window.setTimeout(() => {
+      setShowKeys(false);
+    }, 2000);
   };
 
   const solveExpression = (expression: string): number => {
@@ -153,8 +158,7 @@ function App() {
                       setShuffledKeys(shuffled);
                     }
                     if (selectedDifficulty === "hard") {
-                      // Shows the keys to kick off the useEffect that will hide them
-                      setShowKeys(true);
+                      revealKeys();
                     }
                   }}
                 >
